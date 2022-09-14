@@ -1,15 +1,15 @@
-class ArraysAndStrings():
+class ArraysAndStrings:
     
     def isPalPermTest(self):
         sPalPerm = "hellooh" # holeloh
         sNotPalPerm = "welcome"
-        assert isPalPerm(sPalPerm), "expect to pass test"
-        assert not isPalPerm(sNotPalPerm), "expect to fail test"
+        assert self.isPalPerm(sPalPerm), "expect to pass test"
+        assert not self.isPalPerm(sNotPalPerm), "expect to fail test"
 
     def isPalPerm(self, s):
         isPalPerm = False
         countOdd = 0
-        dict = stringToDict(s)
+        dict = self.stringToDict(s)
         for item in dict.values():
             if item % 2 != 0:
                 countOdd += 1
@@ -21,7 +21,7 @@ class ArraysAndStrings():
     def URLifyTest(self):
         s = "Mr. John Doe"
         sExpected = "Mr.%20John%20Doe"
-        assert URLify(s) == sExpected
+        assert self.URLify(s) == sExpected
 
     def URLify(self, s):
         return s.replace(" ", "%20")
@@ -31,12 +31,12 @@ class ArraysAndStrings():
         sPerm = "olleh orlwd"
         sNotPerm = "hello world:)"
 
-        assert isPerm(s, sPerm), "expect to pass"
-        assert not isPerm(s, sNotPerm), "expect to fail"
+        assert self.isPerm(s, sPerm), "expect to pass"
+        assert not self.isPerm(s, sNotPerm), "expect to fail"
 
     def isPerm(self, s, s2):
-        dict = stringToDict(s)
-        dict2 = stringToDict(s2)
+        dict = self.stringToDict(s)
+        dict2 = self.stringToDict(s2)
 
         for k, v in dict.items():
             if k in dict2 and dict2[k] == v:
@@ -61,14 +61,7 @@ class ArraysAndStrings():
                 dict[char] = 1
         return dict
 
-    def hasUniqueCharsTest(self):
-        s = "supercali"
-        s2 = "supercalifornia"
-
-        assert hasUniqueChars(self, s), "expect to pass"
-        assert not hasUniqueChars(s2), "expect to fail"
-
-    def hasUniqueChars(s):
+    def hasUniqueChars(self, s):
         for char in s:
             # search the string for the character starting
             # from the position after the index of char 
@@ -76,11 +69,9 @@ class ArraysAndStrings():
                 return False
         return True
 
-# execute tests
+    def hasUniqueCharsTest(self):
+        s = "supercali"
+        s2 = "supercalifornia"
 
-aas = ArraysAndStrings()
-
-aas.hasUniqueCharsTest()
-# isPalPermTest()
-# URLifyTest()
-# isPermTest()
+        assert self.hasUniqueChars(s), "expect to pass"
+        assert not self.hasUniqueChars(s2), "expect to fail"
