@@ -1,7 +1,13 @@
 import json
 import requests
 import requests.auth
+import nltk
+from nltk.tokenize import sent_tokenize, word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
 import pandas as pd
+import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 class reddit:
 
@@ -38,19 +44,66 @@ class reddit:
 
         return response
     
+    def rm_stopwords(self, text):
+        nltk.download('stopwords')
+        stops = stopwords.words('english')
+        new_text = ""
+        
+        for word in words:
+            if word not in stop_words:
+                new_text = new_text + " " + word
+        
+        return new_text
+
+    def rm_symbols(self, text):
+        symbols = "!\"#$%&()*+-./:;<=>?@[\]^_`{|}~,\n"
+        for symbol in symbols:
+            text = str(np.char.replace(word, symbol, ''))
+
+    def preprocess(self, text):
+
+        # convert to lowercase
+        np.char.lower(text)
+
+        # remove stop words
+        text = rm_stopwords(text)
+        
+        # remove symbols
+        text = rm_symbols(text)
+        
+        # remove single characters
+        for word in words:
+            if len(word) <= 1:
+                words.remove(word)
+
+        # stemming
+        ps = PorterStemmer()
+        for index, word in enumerate(words):
+            new_word = ps.stem(word)
+            words[index] = new_word
+
+        # remove symbols
+        for symbol in symbols:
+            for index, word in enumerate(words):
+                new_word = str(np.char.replace(word, symbol, ''))
+                words[index] = new_word
+
+        return words
+
     def df_from_response(self, res):
         # load relevant data into a dataframe
         df = pd.DataFrame()
 
         # loop through each post retrieved from GET request
+
         for post in res.json()['data']['children']:
             # append relevant data to dataframe
             df = df.append({
                 'subreddit': post['data']['subreddit'],
                 'title': post['data']['title'],
-                'title_bow': post['data']['title'].lower().split(),
+                'title_bow': self.preprocess(post['data']['title']),
                 'selftext': post['data']['selftext'],
-                'selftext_bow': post['data']['selftext'].lower().split(),
+                'selftext_bow': self.preprocess(post['data']['selftext']),
                 'upvote_ratio': post['data']['upvote_ratio'],
                 'ups': post['data']['ups'],
                 'downs': post['data']['downs'],
