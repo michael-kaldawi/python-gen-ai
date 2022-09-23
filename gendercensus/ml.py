@@ -1,6 +1,10 @@
-### find duplicate jokes
-from sentence_transformers import SentenceTransformer, util
 import pandas as pd
+from num2words import num2words
+import nltk
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
+import numpy as np
+from sentence_transformers import SentenceTransformer, util
 
 class paraphrase_mining:
 
@@ -30,52 +34,57 @@ class paraphrase_mining:
         para_df = para_mining_to_df(sentences)
         return para_df
 
-class tf_idf:
+class preprocess:
     
     def rm_stopwords(self, text):
-        nltk.download('stopwords')
         stops = stopwords.words('english')
         new_text = ""
         
-        # need to update - using single string of text here, not a collection of words
-        for word in text:
+        words = text.split()
+        for word in words:
             if word not in stops:
                 new_text = new_text + " " + word
     
         return new_text
 
     def rm_symbols(self, text):
-        symbols = "!\"#$%&()*+-./:;<=>?@[\]^_`{|}~,\n"
+        symbols = "!\"#$%&()*+-./:;<=>?@[\]^_`{|}~,‘’“”\n"
         for symbol in symbols:
-            text = str(np.char.replace(word, symbol, ' '))
+            text = str(np.char.replace(text, symbol, ' '))
         return text
 
     def rm_apostrophe(self, text):
-        np.char.replace(text, "'", "")
-        return text    
+        return str.replace(text, "'", " ")
     
-    # update for string input, not BoW
     def rm_singlechar(self, text):
+        words = text.split()
+        new_text = ""
         for word in words:
-            if len(word) <= 1:
-                words.remove(word)
-        return text
+            if not len(word) <= 1:
+                new_text = new_text + " " + word
+        return new_text
 
     def convert_numbers(self, text):
-        pass
+        words = text.split()
+        for word in words:
+            if word.isnumeric():
+                text = text.replace(word, num2words(word))
+        return text
 
-    # update for input type
     def stemming(self, text):
         ps = PorterStemmer()
-        for index, word in enumerate(words):
-            new_word = ps.stem(word)
-            words[index] = new_word
+        words = text.split()
+        new_text = ""
+        
+        for word in words:
+            new_text = new_text + " " + ps.stem(word)
 
+        return new_text
 
     def preprocess(self, text):
         
         # convert to lowercase
-        np.char.lower(text)
+        text = str.lower(text)
 
         # remove symbols
         text = self.rm_symbols(text)
@@ -101,7 +110,7 @@ class tf_idf:
         # convert numbers (2)
         text = self.convert_numbers(text)
 
-        return words
+        return text
 
 
 # execute paraphrase mining
@@ -115,56 +124,47 @@ column="title"
 # write the dataframe to a file
 # para_df.to_csv(str("paraphrase_mining_", column, ".csv"))
 
+#### preprocessing and bow creation
+posts = df[["id", "selftext"]].to_numpy()
+pp = preprocess()
+preprocessed_posts = []
+for index, post in posts:
+    p_post = pp.preprocess(post)
+    p_post_bow = p_post.split()
+    
+    # compute tf
+    # tf = {}
+    # for word in p_post_bow:
+    #     if tf[word] is not None:
+    #         tf[word] = tf[word] + 1
+    #     else:
+    #         tf[word] = 1
+
+    preprocessed_posts.append([index, p_post, p_post_bow])
+
+columns = ['id', 'text', 'bow']
+pp_df = pd.DataFrame(preprocessed_posts, columns=columns)
+
+# # compute idf
+# idf = {}
+# for post in preprocessed_posts:
+#     for term in post[4]:
+#         if idf[term] is not None:
+#             idf[term] = idf[term] + term.value()
+#         else:
+#             idf[term] = term.value()
+
+# tfidf = {}
+# for post in preprocessed_posts:
+
+pp_df.to_csv("pp_df.csv")
+
 
 ### compute cosign similarity of selftext
 
 # get posts text
-print("converting dataframe column to array")
-sentences = df["selftext"].to_numpy()
-print("completed")
+# sentences = df["selftext"].to_numpy()
+# cos_df = pd.DataFrame(table_builder)
 
-
-
-cos_df = pd.DataFrame(table_builder)
-print("completed")
-
-# save the dataframe to file
-cos_df.to_csv("cos_df.csv")
-
-
-
-
-############## pronouns 
-
-### aggregate the number of each pronoun in the dataframe
-
-# first, create a dictionary with commonly recognized pronouns
-pronouns = { 
-    "They": ["they", "them", "their", "theirs", "themself"],
-    "She": ["she", "her", "her", "hers", "herself"],
-    "He": ["he", "him", "his", "his", "himself"]
-    # "Xe": ["xe", "xem", "xyr", "xyrs", "xemself"],
-    # "It": ["it", "it", "its", "its", "itself"],
-    # "Fae": ["fae", "faer", "faer", "faers", "faeself"],
-    # "Spivak": ["e", "em", "eir", "eirs", "emself"],
-    # "Ze": ["ze", "hir", "hir", "hirs", "hirself"]
-    }
-
-# next, search all retrieved titles for pronouns
-all_pronouns_df = pd.DataFrame()
-
-for pronoun_set in pronouns:
-    # select rows which contain a pronoun within the current pronoun set
-    pronoun_df = df[df['title_bow'].apply(lambda x: any(item in x for item in pronouns[pronoun_set]))]
-    
-    # add a column with the pronoun set name
-    pronoun_df['title_pronoun'] = pronoun_set  
-
-    # append the data to a dataset we will save
-    all_pronouns_df = pronoun_df.copy() if all_pronouns_df.empty else pd.concat([all_pronouns_df, pronoun_df], ignore_index=True) 
-    
-# remove duplicate entries
-# all_pronouns_df.drop_duplicates(subset=['id'] , ignore_index=True)
-
-filename = "pronouns_df.csv"
-all_pronouns_df.to_csv(filename)
+# # save the dataframe to file
+# cos_df.to_csv("cos_df.csv")

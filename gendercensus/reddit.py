@@ -1,13 +1,6 @@
-import json
 import requests
 import requests.auth
-import nltk
-from nltk.tokenize import sent_tokenize, word_tokenize
-from nltk.corpus import stopwords
-from nltk.stem import PorterStemmer
 import pandas as pd
-import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
 
 class reddit:
 
@@ -30,7 +23,7 @@ class reddit:
         headers = {"User-Agent": "ChangeMeClient, 0.1 by " + self.username}
         response = requests.post("https://www.reddit.com/api/v1/access_token", auth=client_auth, data=post_data, headers=headers)
 
-        access_token = response.json()['access_token'] if response.json()['access_token'] is not None else None
+        access_token = response.json()['access_token']
         return access_token
 
     def request(self, url="https://oauth.reddit.com/api/v1/me", params=[]):
