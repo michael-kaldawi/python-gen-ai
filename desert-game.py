@@ -4,6 +4,10 @@ import random
 from io import BytesIO
 import os
 from openai import OpenAI
+import webbrowser
+import requests
+from PIL import Image
+import types
 
 
 def custom_print(text): 
@@ -16,15 +20,56 @@ def slow_print(text):
     sleep(.5)
 
 
+### Generative AI client
+
+SECRET_KEY = "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"
+
+client = OpenAI(api_key=SECRET_KEY)
+
 ################## Text Answers ###################
 
-results = lambda: None
-results.cube_a = ""
-results.ladder_a = ""
-results.horse_a = ""
-results.flower_a = ""
-results.storm_a = ""
+# results = lambda: None
+# results.cube_a = ""
+# results.ladder_a = ""
+# results.horse_a = ""
+# results.flower_a = ""
+# results.storm_a = ""
+# results.name = ""
+
+################ Updated Text Answers (image gen) #
+
+results = types.SimpleNamespace()
+results.cube = types.SimpleNamespace()
+results.ladder = types.SimpleNamespace()
+results.horse = types.SimpleNamespace()
+results.flower = types.SimpleNamespace()
+results.storm = types.SimpleNamespace()
+
 results.name = ""
+
+results.cube.size = ""
+results.cube.madeof = ""
+results.cube.location = ""
+results.cube.appearance = ""
+
+results.ladder.madeof = ""
+results.ladder.size = ""
+results.ladder.location = ""
+results.ladder.appearance = ""
+
+results.horse.location = ""
+results.horse.activity = ""
+results.horse.direction = ""
+results.horse.appearance = ""
+
+results.flower.count = ""
+results.flower.appearance = ""
+results.flower.location = ""
+
+results.storm.location = ""
+results.storm.direction = ""
+results.storm.effect = ""
+results.storm.appearance = ""
 
 ################## Text Constants #################
 
@@ -44,9 +89,19 @@ cube_q = """In this desert is a cube. Your first task is to describe the cube. W
 
 """
 
+cube_q_appearance = "What does the cube look like?\n"
+cube_q_size = "Describe the size of the cube\n"
+cube_q_madeof = "What is the cube made of?\n"
+cube_q_location = "Where exactly is the cube (in the desert)?\n"
+
 ladder_q = """As you look at the desert and your cube, you notice there is also a ladder. Your second task \(there are just five\) is to describe the ladder. What is it made of? How big is it? Where is it, in relation to the cube?
 
 """
+
+ladder_q_madeof = "What is the ladder made of?\n"
+ladder_q_size = "How big is it?\n"
+ladder_q_location = "Where is it, in relation to the cube?\n"
+ladder_q_appearance = "Describe any additional details about the ladder\n"
 
 horse_q = """Now imagine that in the scene there is a horse. (Yes, horse. I didn't say this desert made sense\).
 
@@ -54,13 +109,28 @@ Your third task: describe the horse. Most importantly: where is the horse, and w
 
 """
 
+horse_q_location = "Where is the horse? (in relation to the cube)\n"
+horse_q_activity = "What is the horse doing?\n"
+horse_q_direction = "What direction is the horse moving? (if moving)\n"
+horse_q_appearance = "Describe the horse: \n"
+
+
 flower_q = """In the scene before you are flowers. Your penultimate task: describe the flowers. How many are there? What do they look like? Where are they, in relation to the horse, cube, ladder and sand?
 
 """
 
+flower_q_count = "How many flowers are there? (feel free to be specific or vague; examples: 3, many, countless, scattered, etc.)\n"
+flower_q_appearance = "Describe the flowers:\n"
+flower_q_location = "Where are they, in relation to the horse, cube, ladder, and sand?"
+
 storm_q = """Final question. In the desert there is a storm. Describe the storm. What type of storm is it? Is it near, or far? What direction is it headed? Does it affect the horse, flowers, cube or ladder?
 
 """
+
+storm_q_location = "Where is the storm?\n"
+storm_q_direction = "What direaction is the storm headed?\n"
+storm_q_effect = " Does the storm affect the horse, flowers, cube or ladder?\n"
+storm_q_appearance = "Describe the storm's appearance.\n"
 
 results_pretext = """If you've been playing along, this is going to be fun. If you didn’t, I must warn you: the next part ruins your ability to play this game ever again. If you won’t want to ruin it forever, go back now. Trust me.
 
@@ -98,46 +168,111 @@ slow_print_opt = 1
 custom_print(intro)
 input("Press Enter to continue... \n")
 
-custom_print("Please Enter your name: ")
+custom_print("Please enter your name: ")
 results.name = input()
 print("\n")
 
+### Collect Results
+
+# cube
 custom_print(cube_q)
-results.cube_a = input()
+custom_print(cube_q_size)
+results.cube.size = input()
+custom_print(cube_q_location)
+results.cube.location = input()
+custom_print(cube_q_madeof)
+results.cube.madeof = input()
+custom_print(cube_q_appearance)
+results.cube.appearance = input()
+#results.cube_a = input()
+
 custom_print(ladder_q)
-results.ladder_a = input()
+custom_print(ladder_q_size)
+results.ladder.size = input()
+custom_print(ladder_q_location)
+results.ladder.location = input()
+custom_print(ladder_q_madeof)
+results.ladder.madeof = input()
+custom_print(ladder_q_appearance)
+results.ladder.appearance = input()
+# results.ladder_a = input()
+
 custom_print(horse_q)
-results.horse_a = input()
+custom_print(horse_q_location)
+results.horse.location = input()
+custom_print(horse_q_activity)
+results.horse.activity = input()
+custom_print(horse_q_appearance)
+results.horse.appearance = input()
+custom_print(horse_q_direction)
+results.horse.direction = input()
+# results.horse_a = input()
+
 custom_print(flower_q)
-results.flower_a = input()
+custom_print(flower_q_count)
+results.flower.count = input()
+custom_print(flower_q_appearance)
+results.flower.appearance = input()
+custom_print(flower_q_location)
+results.flower.location = input()
+# results.flower_a = input()
+
 custom_print(storm_q)
-results.storm_a = input()
+custom_print(storm_q_location)
+results.storm.location = input()
+custom_print(storm_q_appearance)
+results.storm.appearance = input()
+custom_print(storm_q_direction)
+results.storm.direction = input()
+custom_print(storm_q_effect)
+results.storm.effect = input()
+# results.storm_a = input()
+
 
 ### Results
 custom_print("\nYour Results: \n")
-custom_print("Cube: " + results.cube_a + "\n")
-custom_print("Ladder: " + results.ladder_a + "\n")
-custom_print("Horse: " + results.horse_a + "\n")
-custom_print("Flower: " + results.flower_a + "\n")
-custom_print("Storm: " + results.storm_a + "\n\n")
+custom_print(vars(results))
 
 input("Press Enter to continue... ")
 
 custom_print(results_text)
 
 ### Write results to file. 
-filename = results.name + str(random.randrange(1,10000000,1)) + ".txt"
-file = open(filename, "w")
-file.write("Results:\n")
-file.write("Name: " + results.name + "\n")
-file.write("Cube: " + results.cube_a + "\n")
-file.write("Ladder: " + results.ladder_a + "\n")
-file.write("Horse: " + results.horse_a + "\n")
-file.write("Flower: " + results.flower_a + "\n")
-file.write("Storm: " + results.storm_a + "\n\n")
+# filename = results.name + str(random.randrange(1,10000000,1)) + ".txt"
+# file = open(filename, "w")
+# file.write("Results:\n")
+# file.write("Name: " + results.name + "\n")
+# file.write("Cube: " + results.cube_a + "\n")
+# file.write("Ladder: " + results.ladder_a + "\n")
+# file.write("Horse: " + results.horse_a + "\n")
+# file.write("Flower: " + results.flower_a + "\n")
+# file.write("Storm: " + results.storm_a + "\n\n")
 
-file.close()
-
-input("""Thank you for playing! Your results have been saved. Press enter to continue. """)
+# file.close()
 
 ### Pass Results to generative AI for a visualization!
+
+# construct the prompt
+prompt_descriptor = "In a vast desert landscape, stretching out as far as the eye can see, lies a " + results.cube.size + " " + results.cube.madeof + " cube at " + results.cube.location + ". The cube looks like: " + results.cube.appearance + "." + "There is a " + results.ladder.size + " ladder, made of " + results.ladder.madeof + " which is " + results.ladder.location + " The ladder looks like: " + results.ladder.appearance + ". There is a " + results.horse.appearance + " horse " + results.horse.activity + ". The horse is " + results.horse.location + ", and " + results.horse.direction + ". There are " + results.flower.count + " " + results.flower.appearance + " flowers. The flowers are " + results.flower.location + ". A " + results.storm.appearance + " storm is " + results.storm.location + ", and " + results.storm.direction + ". The storm affects the cube, flowers, ladder, and horse in the following way: " + results.storm.effect + "."
+
+response = client.images.generate(
+  model="dall-e-3",
+  prompt=prompt_descriptor,
+  size="1024x1024",
+  quality="standard",
+  n=1
+)
+image_url = response.data[0].url
+
+webbrowser.open(image_url)
+
+# write the image to a file
+image = requests.get(image_url).content
+
+f = open(str("img" + str(random.randrange(1,10000000)) + ".png"), 'wb')
+f.write(image)
+f.close()
+
+### Ending
+
+input("""Thank you for playing! Your results have been saved. Press enter to continue. """)
