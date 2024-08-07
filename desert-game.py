@@ -9,9 +9,10 @@ import requests
 from PIL import Image
 import types
 
+SLOW_PRINT_OPT = 1
 
 def custom_print(text): 
-    slow_print(text) if slow_print_opt else print(text)
+    slow_print(text) if SLOW_PRINT_OPT else print(text)
 
 def slow_print(text):
     for c in text:
@@ -21,8 +22,7 @@ def slow_print(text):
 
 
 ### Generative AI client
-
-SECRET_KEY = "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"
+SECRET_KEY = open("developer-key.txt").readline()
 
 client = OpenAI(api_key=SECRET_KEY)
 
@@ -103,7 +103,7 @@ ladder_q_size = "How big is it?\n"
 ladder_q_location = "Where is it, in relation to the cube?\n"
 ladder_q_appearance = "Describe any additional details about the ladder\n"
 
-horse_q = """Now imagine that in the scene there is a horse. (Yes, horse. I didn't say this desert made sense\).
+horse_q = """Now imagine that in the scene there is a horse. (Yes, horse. I didn't say this desert made sense).
 
 Your third task: describe the horse. Most importantly: where is the horse, and what is it doing? Where, if anywhere, is it going? We’re nearly there now.
 
@@ -121,7 +121,7 @@ flower_q = """In the scene before you are flowers. Your penultimate task: descri
 
 flower_q_count = "How many flowers are there? (feel free to be specific or vague; examples: 3, many, countless, scattered, etc.)\n"
 flower_q_appearance = "Describe the flowers:\n"
-flower_q_location = "Where are they, in relation to the horse, cube, ladder, and sand?"
+flower_q_location = "Where are they, in relation to the horse, cube, ladder, and sand?\n"
 
 storm_q = """Final question. In the desert there is a storm. Describe the storm. What type of storm is it? Is it near, or far? What direction is it headed? Does it affect the horse, flowers, cube or ladder?
 
@@ -146,7 +146,7 @@ The ladder represents your friends. Are your friends leaning on the cube? Your f
 
 The horse represents your dream partner. The type of horse reveals a lot about what you yearn for in a partner. Some people see a steady brown workhorse, others a shining pegasus or unicorn. Make of these people what you will. Is your horse nuzzling your cube affectionately, or taking a bite out of it? Is it far from your cube, or walking away? This can represent a current partner, or an aspirational one, but the results are often a mix of touching and hilarious.
 
-The flowers represent children. The number of flowers relates to how many you imagine having. Some people see just a single, withered daisy; others a resplendent garden covering the cube and desert beneath. (Guys: watch out for those). The colour and vitality of the flowers can speak to their health and presumed prosperity. The placement – particularly in relation to the cube – can reveal interesting relations; I met one woman whose horse was eating their flowers.
+The flowers represent children, pets, and hobbies. The number of flowers relates to how many you imagine having. Some people see just a single, withered daisy; others a resplendent garden covering the cube and desert beneath. The colour and vitality of the flowers can speak to their health and presumed prosperity. The placement – particularly in relation to the cube – can reveal interesting relations; I met one person whose horse was eating their flowers.
 
 Finally, the storm represents threat. This speaks to the current state of the person, and how they perceive risk in their life. Some may see a distant storm, on the lip of the horizon, fading from sight. Others may view themselves in the midst of a thunderous apocalypse, hailstones the size of tennis balls pelting their fragile cube and horse. Chances are those people have some immediate trauma in their life.
 
@@ -158,11 +158,11 @@ Now is this all correct? Of course it isn’t. You won’t be reading any peer-r
 # slow_print("\nType 1 to go through all of the dialogue quickly! Or press Enter to continue at a normal pace.\n")
 
 # slow_a = input()
-slow_print_opt = 1
+# SLOW_PRINT_OPT = 1
 
 # if(slow_a == "1"):
 #     # don't slow print
-#     slow_print_opt = 0
+#     SLOW_PRINT_OPT = 0
 
 ### Intro and questions
 custom_print(intro)

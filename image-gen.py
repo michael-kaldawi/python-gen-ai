@@ -8,7 +8,7 @@ import webbrowser
 import requests
 from PIL import Image
 
-SECRET_KEY = "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"
+SECRET_KEY = open("developer-key.txt").readline()
 
 client = OpenAI(api_key=SECRET_KEY)
 
