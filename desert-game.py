@@ -94,7 +94,7 @@ cube_q_size = "Describe the size of the cube\n"
 cube_q_madeof = "What is the cube made of?\n"
 cube_q_location = "Where exactly is the cube (in the desert)?\n"
 
-ladder_q = """As you look at the desert and your cube, you notice there is also a ladder. Your second task \(there are just five\) is to describe the ladder. What is it made of? How big is it? Where is it, in relation to the cube?
+ladder_q = """As you look at the desert and your cube, you notice there is also a ladder. Your second task (there are just five) is to describe the ladder. What is it made of? How big is it? Where is it, in relation to the cube?
 
 """
 
