@@ -8,15 +8,19 @@ import webbrowser
 import requests
 from PIL import Image
 import types
+import json
 
 SLOW_PRINT_OPT = 1
 
 def custom_print(text): 
-    slow_print(text) if SLOW_PRINT_OPT else print(text)
+    if SLOW_PRINT_OPT:
+        slow_print(text) 
+    else: 
+        print(text)
 
 def slow_print(text):
     for c in text:
-        print(c, end="")
+        print(c, end='', flush=True)
         sleep(.03)
     sleep(.5)
 
@@ -44,6 +48,7 @@ results.ladder = types.SimpleNamespace()
 results.horse = types.SimpleNamespace()
 results.flower = types.SimpleNamespace()
 results.storm = types.SimpleNamespace()
+results.folder = types.SimpleNamespace()
 
 results.name = ""
 
@@ -73,7 +78,8 @@ results.storm.appearance = ""
 
 ################## Text Constants #################
 
-intro = """Playing the Desert Game is a fun one to me. It goes like this:
+intro = """
+Playing the Desert Game is a fun one to me. It goes like this:
 
 The Desert Game
 
@@ -85,7 +91,8 @@ I want you to imagine a desert, stretching out as far as your eyes can see.
 
 # Questions
 
-cube_q = """In this desert is a cube. Your first task is to describe the cube. What does it look like? How large is it? What is it made of? Where exactly is it? There are no right answers here, only your answers. Take a moment before you continue – the detail is important.
+cube_q = """
+In this desert is a cube. Your first task is to describe the cube. What does it look like? How large is it? What is it made of? Where exactly is it? There are no right answers here, only your answers. Take a moment before you continue – the detail is important.
 
 """
 
@@ -94,7 +101,8 @@ cube_q_size = "Describe the size of the cube\n"
 cube_q_madeof = "What is the cube made of?\n"
 cube_q_location = "Where exactly is the cube (in the desert)?\n"
 
-ladder_q = """As you look at the desert and your cube, you notice there is also a ladder. Your second task (there are just five) is to describe the ladder. What is it made of? How big is it? Where is it, in relation to the cube?
+ladder_q = """
+As you look at the desert and your cube, you notice there is also a ladder. Your second task (there are just five) is to describe the ladder. What is it made of? How big is it? Where is it, in relation to the cube?
 
 """
 
@@ -103,7 +111,8 @@ ladder_q_size = "How big is it?\n"
 ladder_q_location = "Where is it, in relation to the cube?\n"
 ladder_q_appearance = "Describe any additional details about the ladder\n"
 
-horse_q = """Now imagine that in the scene there is a horse. (Yes, horse. I didn't say this desert made sense).
+horse_q = """
+Now imagine that in the scene there is a horse. (Yes, horse. I didn't say this desert made sense).
 
 Your third task: describe the horse. Most importantly: where is the horse, and what is it doing? Where, if anywhere, is it going? We’re nearly there now.
 
@@ -115,7 +124,8 @@ horse_q_direction = "What direction is the horse moving? (if moving)\n"
 horse_q_appearance = "Describe the horse: \n"
 
 
-flower_q = """In the scene before you are flowers. Your penultimate task: describe the flowers. How many are there? What do they look like? Where are they, in relation to the horse, cube, ladder and sand?
+flower_q = """
+In the scene before you are flowers. Your penultimate task: describe the flowers. How many are there? What do they look like? Where are they, in relation to the horse, cube, ladder and sand?
 
 """
 
@@ -123,20 +133,22 @@ flower_q_count = "How many flowers are there? (feel free to be specific or vague
 flower_q_appearance = "Describe the flowers:\n"
 flower_q_location = "Where are they, in relation to the horse, cube, ladder, and sand?\n"
 
-storm_q = """Final question. In the desert there is a storm. Describe the storm. What type of storm is it? Is it near, or far? What direction is it headed? Does it affect the horse, flowers, cube or ladder?
+storm_q = """
+Final question. In the desert there is a storm. Describe the storm. What type of storm is it? Is it near, or far? What direction is it headed? Does it affect the horse, flowers, cube or ladder?
 
 """
 
 storm_q_location = "Where is the storm?\n"
 storm_q_direction = "What direaction is the storm headed?\n"
-storm_q_effect = " Does the storm affect the horse, flowers, cube or ladder?\n"
+storm_q_effect = "Does the storm affect the horse, flowers, cube or ladder?\n"
 storm_q_appearance = "Describe the storm's appearance.\n"
 
 results_pretext = """If you've been playing along, this is going to be fun. If you didn’t, I must warn you: the next part ruins your ability to play this game ever again. If you won’t want to ruin it forever, go back now. Trust me.
 
  """
 
-results_text = """The cube is yourself.
+results_text = """
+The cube is yourself.
 
 The size is ostensibly your ego: a large cube means you’re pretty sure of yourself, a small cube less so. The vertical placement of the cube is how grounded you are. Resting on the sand? You’re probably pretty down to earth. Floating in the sky? Your head is in the clouds. The cube’s material conveys how open you are: transparent cubes belong to transparent people, opaque cubes are more protective of their minds. Glowing? You’re likely a positive person, who aims to raise the spirits of others. Made of granite? You’re likely protective and resilient.
 
@@ -155,18 +167,18 @@ Now is this all correct? Of course it isn’t. You won’t be reading any peer-r
 """
 
 ### slow print option 
-# slow_print("\nType 1 to go through all of the dialogue quickly! Or press Enter to continue at a normal pace.\n")
+custom_print("\nType 1 to go through all of the dialogue quickly! Or press Enter to continue at a normal pace.\n")
 
-# slow_a = input()
-# SLOW_PRINT_OPT = 1
+slow_a = input()
 
-# if(slow_a == "1"):
-#     # don't slow print
-#     SLOW_PRINT_OPT = 0
+if(slow_a == "1"):
+    # don't slow print
+    SLOW_PRINT_OPT = 0
 
 ### Intro and questions
 custom_print(intro)
-input("Press Enter to continue... \n")
+custom_print("Press Enter to continue... \n")
+input()
 
 custom_print("Please enter your name: ")
 results.name = input()
@@ -226,27 +238,21 @@ custom_print(storm_q_direction)
 results.storm.direction = input()
 custom_print(storm_q_effect)
 results.storm.effect = input()
-# results.storm_a = input()
-
 
 ### Results
-custom_print("\nYour Results: \n")
-custom_print(vars(results))
+# probably won't work as is, but would be neat to show results
+# custom_print("\nYour Results: \n")
+# custom_print(json.dump(results))
 
 input("Press Enter to continue... ")
 
 custom_print(results_text)
 
 ### Write results to file. 
-# filename = results.name + str(random.randrange(1,10000000,1)) + ".txt"
-# file = open(filename, "w")
-# file.write("Results:\n")
-# file.write("Name: " + results.name + "\n")
-# file.write("Cube: " + results.cube_a + "\n")
-# file.write("Ladder: " + results.ladder_a + "\n")
-# file.write("Horse: " + results.horse_a + "\n")
-# file.write("Flower: " + results.flower_a + "\n")
-# file.write("Storm: " + results.storm_a + "\n\n")
+# TypeError: Object of type SimpleNamespace is not JSON serializable
+# file = results.name + str(random.randrange(1,10000000,1)) + ".json"
+# file = open(file, "w")
+# json.dump(results, file, indent=2)
 
 # file.close()
 
@@ -269,7 +275,10 @@ webbrowser.open(image_url)
 # write the image to a file
 image = requests.get(image_url).content
 
-f = open(str("img" + str(random.randrange(1,10000000)) + ".png"), 'wb')
+results.folder = '.\\results'
+if not os.path.exists(results.folder):
+    os.mkdir(results.folder)
+f = open(str(results.folder + "\\img" + str(random.randrange(1,10000000)) + ".png"), 'wb')
 f.write(image)
 f.close()
 
